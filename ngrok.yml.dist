@@ -1,0 +1,6 @@
+auth_token: #token#
+tunnels:
+  client:
+    subdomain: "subdomain"
+    proto:
+      http: 4567
