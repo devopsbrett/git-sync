@@ -4,4 +4,6 @@
 /log/*.log
 /tmp
 
-/ngrok.yml
+/ngrok.yml/bin
+/pids
+/ngrok

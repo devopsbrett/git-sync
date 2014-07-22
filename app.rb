@@ -15,20 +15,12 @@ end
 
 require './gits'
 
-class GitSync
+class GitAsync
   include Sidekiq::Worker
 
-  def perform(mirror)
-    git = Gits.new(mirror)
-    git.sync
-  end
-end
-
-class GitClone
-  include Sidekiq::Worker
-
-  def perform(url)
-    git = Gits.clone(url)
+  def perform(githash = {}, action = nil)
+    git = Gits.new(githash)
+    git.send(action)
   end
 end
 
@@ -43,9 +35,9 @@ get '/add' do
 end
 
 post '/add' do
-  halt 400, "Required parameter 'repo' missing" unless params.has_key?('repo')
-  halt 409, "Repo already being mirrored" if Gits.exist?(params['repo'])
-  GitClone.perform_async params['repo']
+  halt 400, "Required parameter 'repo' missing" unless params.has_key?('githuburl')
+  halt 409, "Repo already being mirrored" if Gits.exists?(params['githuburl'])
+  GitAsync.perform_async({'githuburl' => params['githuburl']}, 'clone')
   redirect '/'
 end
 
@@ -55,5 +47,5 @@ post '/webhook' do
   mirror = Gits.find(JSON.parse(params['payload'])["repository"])
   halt 400, "Not mirroring this repo" unless mirror
   puts mirror.repo
-  GitSync.perform_async mirror.repo
+  GitAsync.perform_async({'repo' => mirror.repo}, 'sync')
 end

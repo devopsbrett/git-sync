@@ -5,6 +5,8 @@ gem 'sinatra-contrib'
 gem 'thin'
 gem 'sidekiq'
 gem 'rake'
+gem 'sidekiq-unique-jobs'
+gem 'god'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 # gem 'rails', '4.0.5'
